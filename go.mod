@@ -1,4 +1,4 @@
-module github.com/fuji-184/GoFiber-Svelte5PreviewSSG-Template
+module github.com/fuji-184/GoFiber-Svelte5PreviewSSG-Embedded-Template
 
 go 1.22.2
 
