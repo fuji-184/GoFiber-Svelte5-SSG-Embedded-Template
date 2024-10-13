@@ -11,6 +11,8 @@ import (
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	_ "github.com/mattn/go-sqlite3"
+	"github.com/gofiber/fiber/v2/middleware/cache"
+	"github.com/gofiber/fiber/v2/middleware/compress"
 )
 
 //go:embed all:svelte/build
@@ -58,6 +60,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	app.Use(compress.New(compress.Config{
+		Level: compress.LevelBestSpeed,
+	}))
+	app.Use(cache.New(cache.Config{
+		Expiration: 30 * time.Minute,
+		CacheControl: true,
+	}))
 
 	app.Get("/", staticServer)
 	app.Get("/_app/*", staticServer)
