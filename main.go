@@ -7,12 +7,15 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"os"
+	"runtime"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	_ "github.com/mattn/go-sqlite3"
 	"github.com/gofiber/fiber/v2/middleware/cache"
 	"github.com/gofiber/fiber/v2/middleware/compress"
+	"github.com/goccy/go-json"
 )
 
 //go:embed all:svelte/build
@@ -24,7 +27,23 @@ type Tes struct {
 }
 
 func main() {
-	app := fiber.New()
+	runtime.GOMAXPROCS(runtime.NumCPU())
+	config := fiber.Config{
+		CaseSensitive:            true,
+		StrictRouting:            true,
+		DisableHeaderNormalizing: true,
+		ServerHeader:             "go",
+		JSONEncoder:              json.Marshal,
+		JSONDecoder:              json.Unmarshal,
+	}
+
+	for i := range os.Args[1:] {
+		if os.Args[1:][i] == "-prefork" {
+			config.Prefork = true
+		}
+	}
+
+	app := fiber.New(config)
 
 	s, err := fs.Sub(embedDirStatic, "svelte/build")
 	if err != nil {
@@ -81,7 +100,7 @@ func main() {
 		return staticServer(c)
 	})
 
-	app.Listen(":3000")
+	app.Listen(":8888")
 }
 
 func handleTes(c *fiber.Ctx, db *sql.DB) error {
@@ -100,5 +119,5 @@ func handleTes(c *fiber.Ctx, db *sql.DB) error {
 		results = append(results, tes)
 	}
 
-	return c.JSON(results)
+	return c.JSON(&results)
 }
