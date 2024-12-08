@@ -26,6 +26,10 @@ type Tes struct {
 	Name string `json:"name"`
 }
 
+type HelloWorld struct {
+    Message string `json:message`
+}
+
 func main() {
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	config := fiber.Config{
@@ -95,6 +99,15 @@ func main() {
 	app.Get("/tes", func(c *fiber.Ctx) error {
 		return handleTes(c, db)
 	})
+
+    app.Get("/json", func(c *fiber.Ctx) error {
+        hello := HelloWorld {
+            Message: "Hello World!",
+        }
+
+        return c.JSON(hello)
+    })
+
 	app.Get("/*", func(c *fiber.Ctx) error {
 		c.Path("/")
 		return staticServer(c)
