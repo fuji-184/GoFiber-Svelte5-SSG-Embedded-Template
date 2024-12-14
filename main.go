@@ -18,7 +18,7 @@ import (
 	"github.com/goccy/go-json"
 )
 
-//go:embed all:svelte/build
+//go:embed all:frontend/build
 var embedDirStatic embed.FS
 
 type Tes struct {
@@ -49,7 +49,7 @@ func main() {
 
 	app := fiber.New(config)
 
-	s, err := fs.Sub(embedDirStatic, "svelte/build")
+	s, err := fs.Sub(embedDirStatic, "frontend/build")
 	if err != nil {
 		panic(err)
 	}
